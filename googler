@@ -35,7 +35,7 @@ import shutil
 import signal
 import socket
 import ssl
-from subprocess import Popen, PIPE, DEVNULL
+from subprocess import Popen, PIPE, DEVNULL, check_call
 import sys
 import textwrap
 import unicodedata
@@ -3149,6 +3149,8 @@ def parse_args(args=None, namespace=None):
            help='set output colors (see man page for details)')
     addarg('-j', '--first', '--lucky', dest='lucky', action='store_true',
            help='open the first result in web browser and exit')
+    addarg('-k', '--lucky3', dest='lucky3', action='store_true',
+           help='open the first result in web browser and exit')
     addarg('-t', '--time', dest='duration', type=argparser.is_duration,
            metavar='dN', help='time limit search '
            '[h5 (5 hrs), d5 (5 days), w5 (5 weeks), m5 (5 months), y5 (5 years)]')
@@ -3283,12 +3285,19 @@ def main():
 
         repl = GooglerCmd(opts)
 
-        if opts.json or opts.lucky or opts.noninteractive:
+        if opts.json or opts.lucky or opts.lucky3 or opts.noninteractive:
             # Non-interactive mode
             repl.fetch()
             if opts.lucky:
                 if repl.results:
                     open_url(repl.results[0].url)
+                else:
+                    print('No results.', file=sys.stderr)
+            elif opts.lucky3:
+                if repl.results:
+                    urls = "'" + "' '".join([repl._google_url.full() , repl.results[0].url, repl.results[1].url, repl.results[2].url]) + "'"
+                    print('x-www-browser --new-window ' + urls)
+                    check_call('x-www-browser --new-window ' + urls, shell=True)
                 else:
                     print('No results.', file=sys.stderr)
             else:
