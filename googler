@@ -3296,8 +3296,8 @@ def main():
             elif opts.lucky3:
                 if repl.results:
                     urls = "'" + "' '".join([repl._google_url.full() , repl.results[0].url, repl.results[1].url, repl.results[2].url]) + "'"
-                    print('x-www-browser --new-window ' + urls)
-                    check_call('x-www-browser --new-window ' + urls, shell=True)
+                    # print('x-www-browser --new-window ' + urls)
+                    check_call('x-www-browser --new-window ' + urls +" 2> /dev/null", shell=True)
                 else:
                     print('No results.', file=sys.stderr)
             else:
